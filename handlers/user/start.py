@@ -5,6 +5,7 @@ from aiogram.types import FSInputFile
 
 from loader import db, dp, bot
 from keyboards.inlinekeys import clints_history
+from states.image_states import ImageGroup
 
 
 @dp.message(CommandStart())
@@ -29,4 +30,21 @@ async def get_all_clients(message: types.Message, state: FSMContext):
         clients = db.get_all_clients(user_id, client_name)
         for client in clients:
             await message.answer_photo(photo=FSInputFile(client[0]))
+    await state.clear()
+
+
+@dp.message(Command("delete"))
+async def get_delete_client(message: types.Message, state: FSMContext):
+    await  message.answer("Iltimos tanlang: ", reply_markup=clints_history.get_clints_history(message.from_user.id))
+    await state.set_state(ImageGroup.getDeleteUserState)
+
+
+@dp.message(ImageGroup.getDeleteUserState)
+async def get_delete_client(message: types.Message, state: FSMContext):
+    if message.text == "all":
+        db.delete_all_clients(message.from_user.id)
+    else:
+        client_name = message.text
+        db.delete_clints_history(message.from_user.id, client_name)
+    await  message.answer("Ma'lumotlar tozalandi")
     await state.clear()

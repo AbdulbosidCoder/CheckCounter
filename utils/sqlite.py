@@ -105,3 +105,14 @@ class Database:
     def get_all_clients(self,telegram_id):
         sql = """SELECT image_url FROM Pictures where created_by = ? ORDER BY id DESC """
         return self.execute(sql, parametrs=(telegram_id,), fetchall=True)
+
+    def delete_all_clients(self, telegram_id):
+        sql =  """DELETE FROM Pictures WHERE created_by = ? """
+
+        self.execute(sql, parametrs=(telegram_id,), commit=True)
+
+    def delete_clints_history(self, telegram_id, name):
+        sql = """DELETE FROM Pictures WHERE name = ? AND created_by = ? """
+        self.execute(sql, parametrs=(name,telegram_id,), commit=True)
+
+
